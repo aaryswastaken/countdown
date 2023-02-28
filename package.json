@@ -1,0 +1,30 @@
+{
+  "name": "countdown",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aaryswastaken/countdown.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aaryswastaken/countdown/issues"
+  },
+  "homepage": "https://github.com/aaryswastaken/countdown#readme",
+  "dependencies": {
+    "@fastify/cookie": "^8.3.0",
+    "@fastify/jwt": "^6.6.0",
+    "@fastify/view": "^7.4.1",
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
+    "ejs": "^3.1.8",
+    "fastify": "^4.13.0",
+    "fastify-simple-form": "^3.0.0"
+  }
+}
