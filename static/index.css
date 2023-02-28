@@ -4,6 +4,7 @@
     --popup-padding: 60px;
     --whiteish: #e9edef;
     --less-whiteish: #6a6d6d;
+    --redish: #eb3f3f;
 }
 
 .popup {
@@ -105,6 +106,12 @@
     right: var(--popup-padding);
 }
 
+.delete_cnt {
+    position: absolute;
+    bottom: var(--popup-padding);
+    left: var(--popup-padding);
+}
+
 .popup_selection > button {
     background-color: rgba(0, 0, 0, 0);
     font-size: 1.3em;
@@ -123,4 +130,24 @@
 .popup_selection > button:hover {
     background-color: var(--less-whiteish);
     border-color: var(--less-whiteish);
+}
+
+.delete_cnt > button {
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 1.3em;
+    color: var(--whiteish);
+
+    border: solid 2px var(--redish);
+    border-radius: calc(3em / 4);
+    height: 3em;
+    width: 7em;
+    margin: 0 1em;
+    /* padding: 0.5em 2em; */
+
+    transition: 0.15s ease-in-out;
+}
+
+.delete_cnt > button:hover {
+    background-color: var(--redish);
+    border-color: var(--redish);
 }

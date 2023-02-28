@@ -32,6 +32,36 @@ body {
     align-self: flex-end;
 }
 
+.user {
+    display: flex;
+    justify-content: end;
+}
+
+.user > * {
+    align-self: flex-end;
+}
+
+#new_cnt {
+    background: none;
+    font-weight: 700;
+
+    color: #e9eeef;
+    font-size: 2em;
+
+    position: relative;
+    top: 0.2em;
+
+    margin-left: 15px;
+
+    outline: none;
+    border: none;
+}
+
+#new_cnt:focus, #new_cnt:focus-visible {
+    outline: none;
+    border: none;
+}
+
 .title {
     font-size: 2.5em;
     font-weight: 500;

@@ -10,7 +10,7 @@
             <div class="popup_inner">
                 <div class="popup_title_cnt">
                     <input class="popup_countdown_title" id="edit_countdown_name" value="Loading... ">
-                    <div># 1</div>
+                    <div id="popup_id_display"># 1</div>
                 </div>
 
                 <div class="date_picker">
@@ -27,6 +27,10 @@
                     <input type="text" class="fourd_sel" value="0" id="sel_year">
                 </div>
 
+                <div class="delete_cnt">
+                    <button onclick="requestDeletion()">Delete</button>
+                </div>
+
                 <div class="popup_selection">
                     <button onclick="validate()">Edit</button>
                     <button onclick="adiosPopup()">Cancel</button>
@@ -36,8 +40,15 @@
         <div class="header">
             <ul class="top">
                 <li class="padding"></li>
-                <li class="title"><div><i>Countdown</i></div></li>
-                <li class="user"><div>Aarys Sahler</div></li>
+                <li class="title">
+                    <div>
+                        <i>Countdown</i>
+                    </div>
+                </li>
+                <li class="user">
+                    <div>Aarys Sahler</div>
+                    <button id="new_cnt" onclick="requestNew()">+</button>
+                </li>
             </ul>
         </div>
         <div class="main">
@@ -79,6 +90,8 @@
                 document.getElementById("sel_hour").value = date.getHours();
                 document.getElementById("sel_minutes").value = date.getMinutes();
                 document.getElementById("sel_seconds").value = date.getSeconds();
+
+                document.getElementById("popup_id_display").innerText = "# "+id;
 
                 editing_id = id;
             }
@@ -256,6 +269,40 @@
                 parent.onclick = () => {
                     spawnPopup(id);
                 }
+            }
+
+            function requestNew() {
+                const post_new = new XMLHttpRequest();
+                post_new.onreadystatechange = () => {
+                    if (post_new.readyState == 4) {
+                        if (post_new.status == 200) {
+                            location.reload();
+                        } else {
+                            alert("[POST] Something happened: "+post_new.responseText);
+                        }
+                    }
+                }
+
+                post_new.open("POST", "/api/countdowns/new", true);
+                post_new.send();
+            }
+
+            function requestDeletion() {
+                let id = editing_id;
+
+                const post_del = new XMLHttpRequest();
+                post_del.onreadystatechange = () => {
+                    if (post_del.readyState == 4) {
+                        if (post_del.status == 200) {
+                            location.reload();
+                        } else {
+                            alert("[POST] Something happened: "+post_del.responseText);
+                        }
+                    }
+                }
+
+                post_del.open("POST", "/api/countdowns/delete/"+id, true);
+                post_del.send();
             }
 
             // ****** ONREADY ******

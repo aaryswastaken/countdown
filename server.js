@@ -159,7 +159,50 @@ server.post("/api/countdowns/edit/:id", async (req, res) => {
             res.code(401).send("Wrong authorisation token")
         }
     }
-})
+});
+
+server.post("/api/countdowns/new", async (req, res) => {
+    if (req.cookies["jwt"] === undefined) {
+        res.code(401).send("No authorisation token")
+    } else {
+        if (await req.jwtVerify({onlyCookie: true})) {
+            let decoded = server.jwt.decode(req.cookies["jwt"]);
+            
+            let lastId = Math.max(...(database.countdowns.map(c => c.id)));
+
+            database.countdowns.push({ user: decoded.username, id: lastId+1, end: Date.now(), name: "New Countdown" })
+
+            save_db();
+
+            res.code(200).send("Ok");
+        } else {
+            res.code(401).send("Wrong authorisation token")
+        }
+    }
+});
+
+server.post("/api/countdowns/delete/:id", async (req, res) => {
+    if (req.cookies["jwt"] === undefined) {
+        res.code(401).send("No authorisation token")
+    } else {
+        if (await req.jwtVerify({onlyCookie: true})) {
+            let { id } = req.params;
+            let decoded = server.jwt.decode(req.cookies["jwt"]);
+
+            if (database.countdowns.filter(c => c.id == id)[0].user == decoded.username) {
+                database.countdowns = database.countdowns.filter(c => c.id != id);
+
+                save_db();
+
+                res.code(200).send("Ok");
+            } else {
+                res.code(401).send("Unauthorized");
+            }
+        } else {
+            res.code(401).send("Wrong authorisation token")
+        }
+    }
+});
 
 server.post("/authenticate", {
     schema: {
