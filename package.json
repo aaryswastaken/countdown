@@ -19,6 +19,7 @@
   "homepage": "https://github.com/aaryswastaken/countdown#readme",
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
+    "@fastify/formbody": "^7.4.0",
     "@fastify/jwt": "^6.6.0",
     "@fastify/view": "^7.4.1",
     "bcrypt": "^5.1.0",

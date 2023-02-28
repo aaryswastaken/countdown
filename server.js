@@ -4,7 +4,7 @@ import ejs from 'ejs';
 import jwt from '@fastify/jwt';
 import dotenv from 'dotenv';
 import { compare } from 'bcrypt';
-import SimpleFormPlugin from 'fastify-simple-form';
+import FormBody from '@fastify/formbody';
 import cookie from '@fastify/cookie';
 
 dotenv.config();
@@ -28,10 +28,7 @@ server.register(jwt, {
     },
 })
 
-server.register(SimpleFormPlugin, {
-    multipart: true,
-    urlencoded: false,
-});
+server.register(FormBody);
 
 server.register(cookie, {
     secret: process.env.COOKIE_SECRET ?? "cookie_secret",
@@ -39,7 +36,7 @@ server.register(cookie, {
     parseOptions: {}
 });
 
-const ressource_whitelist = [ "main.css" ];
+const ressource_whitelist = [ "main.css", "login.css" ];
 const types = {"css": "text/css"};
 
 function init_db() {
@@ -83,13 +80,18 @@ server.get("/", async (req, res) => {
         res.redirect("/login");
     } else {
         if (await req.jwtVerify({onlyCookie: true})) {
-            let decoded = server.jwt.decode(req.cookies["jwt"]);
-            console.log(decoded);
-            res.view("/static/index.ejs", { user: decoded });
+            let decoded = await server.jwt.decode(req.cookies["jwt"]);
+            return res.view("/static/index.ejs");
         } else {
             res.redirect("/login?jwt_e");
         }
     }
+})
+
+server.get("/login", (req, res) => {
+    let { login_error } = req.params;
+
+    res.view("/static/login.ejs", { login_error });
 })
 
 server.get("/static/:ressource_name", (req, res) => {
@@ -109,14 +111,14 @@ server.get("/static/:ressource_name", (req, res) => {
 
 server.get("/api/countdowns", async (req, res) => {
     if (req.cookies["jwt"] === undefined) {
-        res.redirect("/login");
+        res.code(401).send("No authorisation token")
     } else {
         if (await req.jwtVerify({onlyCookie: true})) {
             let decoded = server.jwt.decode(req.cookies["jwt"]);
             
             res.send(database.countdowns.filter(c => c.user == decoded.username));
         } else {
-            res.redirect("/login?jwt_e");
+            res.code(401).send("Wrong authorisation token")
         }
     }
 })

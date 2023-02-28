@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/static/main.css">
+        <link rel="stylesheet" href="/static/login.css">
+    </head>
+    <body>
+        <div>
+            <div class="title_container">
+                <div>Countdown</div>
+                <div></div>
+            </div>
+            <div class="login_container">
+                <form action="/authenticate" method="post">
+                    <label for="uname_input">Username</label>
+                    <input type="text" name="username" id="uname_input" placeholder="Username"/>
+                    
+                    <label for="pwd_input">Password</label>
+                    <input type="password" name="password" id="pwd_input" placeholder="Password"/>
+
+                    <input type="hidden" name="redirect_uri" value="/"/>
+
+                    <input type="submit" value="Login" class="submit">
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
