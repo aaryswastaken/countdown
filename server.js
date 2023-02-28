@@ -56,7 +56,6 @@ if (!existsSync("./database.json")) {
 }
 
 let database = {};
-let cache = {};
 
 try {
     database = import_db();
@@ -118,6 +117,44 @@ server.get("/api/countdowns", async (req, res) => {
             let decoded = server.jwt.decode(req.cookies["jwt"]);
             
             res.send(database.countdowns.filter(c => c.user == decoded.username));
+        } else {
+            res.code(401).send("Wrong authorisation token")
+        }
+    }
+})
+
+server.post("/api/countdowns/edit/:id", async (req, res) => {
+    if (req.cookies["jwt"] === undefined) {
+        res.code(401).send("No authorisation token")
+    } else {
+        if (await req.jwtVerify({onlyCookie: true})) {
+            let { id } = req.params;
+            let { new_epoch, new_name } = req.query;
+            let decoded = server.jwt.decode(req.cookies["jwt"]);
+            
+            // Check if countdown id is from user:
+            let countdown = database.countdowns.filter(c => c.id == id)[0];
+
+            console.log(req.query)
+
+            if (countdown.user == decoded.username) {
+                // Proceed
+
+                database.countdowns = database.countdowns.map(c => {
+                    if (c.id == id) {
+                        c.end = parseInt(new_epoch) || c.end;
+                        c.name = new_name || c.name;
+                    }
+
+                    return c
+                });
+
+                save_db();
+
+                res.code(200).send("Ok");
+            } else {
+                res.code(401).send("Unauthorized edit")
+            }
         } else {
             res.code(401).send("Wrong authorisation token")
         }

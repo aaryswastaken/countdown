@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="popup_selection">
-                    <button>Edit</button>
+                    <button onclick="validate()">Edit</button>
                     <button onclick="adiosPopup()">Cancel</button>
                 </div>
             </div>
@@ -63,6 +63,7 @@
             }
 
             countdowns = processCountdowns(r_cnts);
+            let editing_id = NaN;
 
             function fill_popup(id) {
                 document.getElementById("edit_countdown_name").value = countdowns[id].name;
@@ -75,6 +76,8 @@
                 document.getElementById("sel_hour").value = date.getHours();
                 document.getElementById("sel_minutes").value = date.getMinutes();
                 document.getElementById("sel_seconds").value = date.getSeconds();
+
+                editing_id = id;
             }
 
             function reset_popup() {
@@ -86,6 +89,81 @@
                 document.getElementById("sel_hour").value = "0";
                 document.getElementById("sel_minutes").value = "0";
                 document.getElementById("sel_seconds").value = "0";
+
+                editing_id = NaN;
+            }
+
+            function fetch_params() {
+                let end = new Date();
+
+                end.setFullYear(parseInt(document.getElementById("sel_year").value))
+                end.setMonth(parseInt(document.getElementById("sel_month").value))
+                end.setDate(parseInt(document.getElementById("sel_day").value))
+                end.setHours(parseInt(document.getElementById("sel_hour").value))
+                end.setMinutes(parseInt(document.getElementById("sel_minutes").value))
+                end.setSeconds(parseInt(document.getElementById("sel_seconds").value))
+
+                let new_name = document.getElementById("edit_countdown_name").value;
+
+                let edited = [];
+
+                if (new_name != countdowns[editing_id].name) {
+                    edited.push('new_name');
+                }
+
+                if (end.getTime() != countdowns[editing_id].end) {
+                    edited.push('new_epoch')
+                }
+
+                return { new_epoch: end.getTime(), new_name , edited }
+            }
+
+            function refresh_cache() {
+                const get = new XMLHttpRequest();
+                get.onreadystatechange = () => {
+                    if (get.readyState == 4) {
+                        if (get.status == 200) {
+                            r_cnts = get.responseText;
+                            countdowns = processCountdowns(JSON.parse(r_cnts));
+                        } else {
+                            alert("[GET] Something happened: "+get.responseText);
+                        }
+                    }
+                }
+
+                get.open("GET", "/api/countdowns", true);
+                get.send();
+            }
+
+            function validate() {
+                if (isNaN(editing_id)) {
+                    console.log("Error: tried to validate while editing_id is NaN")
+                    return;
+                }
+
+                let params = fetch_params();
+
+                // Filter by edited
+                let r_params = Object.fromEntries(Object.entries(params).filter(e => params.edited.includes(e[0])));
+
+                const post = new XMLHttpRequest();
+                post.onreadystatechange = () => {
+                    if (post.readyState == 4) {
+                        if (post.status == 200) {
+                            refresh_cache();
+                            adiosPopup();
+                        } else {
+                            alert("[POST] Something happened: "+post.responseText);
+                        }
+                    }
+                }
+
+                let url = "/api/countdowns/edit/"+editing_id+"?"+Object.entries(r_params).map(p => p[0]+"="+p[1]).join("&");
+
+                console.log(url)
+
+                post.open("POST", url, true);
+                post.send();
             }
 
             function spawnPopup(id) {
