@@ -2,8 +2,37 @@
 <html>
     <head>
         <link rel="stylesheet" href="/static/main.css">
+        <link rel="stylesheet" href="/static/index.css">
     </head>
     <body>
+        <div class="popup" id="popup" hidden>
+            <div class="popup_bg" onclick="adiosPopup()"></div>
+            <div class="popup_inner">
+                <div class="popup_title_cnt">
+                    <input class="popup_countdown_title" id="edit_countdown_name" value="Loading... ">
+                    <div># 1</div>
+                </div>
+
+                <div class="date_picker">
+                    <input type="text" class="twod_sel" value="0" id="sel_hour">
+                    <div>:</div>
+                    <input type="text" class="twod_sel" value="0" id="sel_minutes">
+                    <div>:</div>
+                    <input type="text" class="twod_sel" value="0" id="sel_seconds">
+                    <div class="separator"></div>
+                    <input type="text" class="twod_sel" value="0" id="sel_day">
+                    <div>-</div>
+                    <input type="text" class="twod_sel" value="0" id="sel_month">
+                    <div>-</div>
+                    <input type="text" class="fourd_sel" value="0" id="sel_year">
+                </div>
+
+                <div class="popup_selection">
+                    <button>Edit</button>
+                    <button onclick="adiosPopup()">Cancel</button>
+                </div>
+            </div>
+        </div>
         <div class="header">
             <ul class="top">
                 <li class="padding"></li>
@@ -13,35 +42,75 @@
         </div>
         <div class="main">
             <ul class="cards">
-                <li class="cards_item">
-                    <div class="card">
-                        <div class="card_title"> Very interesting thing </div>
-                        <div class="card_underline"></div>
-                        <div class="card_text"> 136 jours 15 heures 28 minutes 43 secondes </div>
-                    </div>
-                </li>
-                <li class="cards_item">
-                    <div class="card">
-                        <div class="card_title"> Very interesting thing </div>
-                        <div class="card_underline"></div>
-                        <div class="card_text"> 136 jours 15 heures 28 minutes 43 secondes </div>
-                    </div>
-                </li>
-                <li class="cards_item">
-                    <div class="card">
-                        <div class="card_title"> Very interesting thing </div>
-                        <div class="card_underline"></div>
-                        <div class="card_text"> 136 jours 15 heures 28 minutes 43 secondes </div>
-                    </div>
-                </li>
-                <li class="cards_item">
-                    <div class="card">
-                        <div class="card_title"> Very interesting thing </div>
-                        <div class="card_underline"></div>
-                        <div class="card_text"> 136 jours 15 heures 28 minutes 43 secondes </div>
-                    </div>
-                </li>
+                <% countdowns.forEach(countdown => {%>
+                    <li class="cards_item countdown" id="countdown_<%= countdown.id %>">
+                        <div class="card">
+                            <div class="card_title"> <%= countdown.name %></div>
+                            <div class="card_underline"></div>
+                            <div class="card_text"> Loading ... </div>
+                        </div>
+                    </li>
+                <% }) %>
             </ul>
         </div>
+        <script>
+            var r_cnts = <%- JSON.stringify(countdowns) %>;
+
+            function processCountdowns(raw) {
+                return Object.fromEntries(raw.map(c => {
+                    return [c.id, Object.fromEntries(Object.entries(c).filter(j => j[0] !== "id"))]
+                }))
+            }
+
+            countdowns = processCountdowns(r_cnts);
+
+            function fill_popup(id) {
+                document.getElementById("edit_countdown_name").value = countdowns[id].name;
+
+                let date = new Date(countdowns[id].end);
+
+                document.getElementById("sel_year").value = date.getFullYear();
+                document.getElementById("sel_month").value = date.getMonth();
+                document.getElementById("sel_day").value = date.getDay();
+                document.getElementById("sel_hour").value = date.getHours();
+                document.getElementById("sel_minutes").value = date.getMinutes();
+                document.getElementById("sel_seconds").value = date.getSeconds();
+            }
+
+            function reset_popup() {
+                document.getElementById("edit_countdown_name").value = "Loading... ";
+
+                document.getElementById("sel_year").value = "0";
+                document.getElementById("sel_month").value = "0";
+                document.getElementById("sel_day").value = "0";
+                document.getElementById("sel_hour").value = "0";
+                document.getElementById("sel_minutes").value = "0";
+                document.getElementById("sel_seconds").value = "0";
+            }
+
+            function spawnPopup(id) {
+                fill_popup(id);
+                document.getElementById("popup").hidden = false;
+            }
+
+            function adiosPopup() {
+                reset_popup();
+                document.getElementById("popup").hidden = true;
+            }
+
+            function setupPopup(parent) {
+                let id = parent.id.split("_")[1];
+                console.log("Setting popup for "+id)
+
+                parent.onclick = () => {
+                    spawnPopup(id);
+                }
+            }
+
+            // ****** ONREADY ******
+            Array.from(document.getElementsByClassName("countdown")).forEach(c => {
+                setupPopup(c);
+            })
+        </script>
     </body>
 </html>

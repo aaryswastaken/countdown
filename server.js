@@ -36,7 +36,7 @@ server.register(cookie, {
     parseOptions: {}
 });
 
-const ressource_whitelist = [ "main.css", "login.css" ];
+const ressource_whitelist = [ "main.css", "login.css", "index.css" ];
 const types = {"css": "text/css"};
 
 function init_db() {
@@ -81,7 +81,8 @@ server.get("/", async (req, res) => {
     } else {
         if (await req.jwtVerify({onlyCookie: true})) {
             let decoded = await server.jwt.decode(req.cookies["jwt"]);
-            return res.view("/static/index.ejs");
+            let countdowns = database.countdowns.filter(c => c.user == decoded.username)
+            return res.view("/static/index.ejs", { user: decoded, countdowns });
         } else {
             res.redirect("/login?jwt_e");
         }
