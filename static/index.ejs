@@ -41,7 +41,7 @@
             </ul>
         </div>
         <div class="main">
-            <ul class="cards">
+            <ul class="cards" id="main_cnt">
                 <% countdowns.forEach(countdown => {%>
                     <li class="cards_item countdown" id="countdown_<%= countdown.id %>">
                         <div class="card">
@@ -62,8 +62,11 @@
                 }))
             }
 
-            countdowns = processCountdowns(r_cnts);
+            let countdowns = processCountdowns(r_cnts);
+            let cache = [];
             let editing_id = NaN;
+            const period = 50;
+            let routineControl = true;
 
             function fill_popup(id) {
                 document.getElementById("edit_countdown_name").value = countdowns[id].name;
@@ -71,8 +74,8 @@
                 let date = new Date(countdowns[id].end);
 
                 document.getElementById("sel_year").value = date.getFullYear();
-                document.getElementById("sel_month").value = date.getMonth();
-                document.getElementById("sel_day").value = date.getDay();
+                document.getElementById("sel_month").value = date.getMonth()+1;
+                document.getElementById("sel_day").value = date.getDate();
                 document.getElementById("sel_hour").value = date.getHours();
                 document.getElementById("sel_minutes").value = date.getMinutes();
                 document.getElementById("sel_seconds").value = date.getSeconds();
@@ -97,7 +100,7 @@
                 let end = new Date();
 
                 end.setFullYear(parseInt(document.getElementById("sel_year").value))
-                end.setMonth(parseInt(document.getElementById("sel_month").value))
+                end.setMonth(parseInt(document.getElementById("sel_month").value)-1)
                 end.setDate(parseInt(document.getElementById("sel_day").value))
                 end.setHours(parseInt(document.getElementById("sel_hour").value))
                 end.setMinutes(parseInt(document.getElementById("sel_minutes").value))
@@ -135,6 +138,26 @@
                 get.send();
             }
 
+            function refresh_entries() {
+                let cnt = document.getElementById("main_cnt");
+
+                Array.from(document.getElementsByClassName("countdown")).forEach(cdown_e => {
+                    let id = cdown_e.id.split("_")[1];
+
+                    let grp = Array.from(cdown_e.children[0].children);
+
+                    grp.forEach(e => {
+                        let c_l = Array.from(e.classList);
+                        if (c_l.includes('card_title')) {
+                            e.innerText = countdowns[id].name;
+                        }
+                    })
+                })
+
+                stopRoutine();
+                startRoutine();
+            }
+
             function validate() {
                 if (isNaN(editing_id)) {
                     console.log("Error: tried to validate while editing_id is NaN")
@@ -151,6 +174,7 @@
                     if (post.readyState == 4) {
                         if (post.status == 200) {
                             refresh_cache();
+                            refresh_entries();
                             adiosPopup();
                         } else {
                             alert("[POST] Something happened: "+post.responseText);
@@ -164,6 +188,55 @@
 
                 post.open("POST", url, true);
                 post.send();
+            }
+
+            function _routine() {
+                cache.forEach(cdown => {
+                    let target = countdowns[cdown.id].end;
+
+                    let now = Date.now()
+                    let diff = new Date(target-now);
+
+                    let full = (parseInt((diff.getTime()/(3600*24*1000)).toString().split(".")[0]))+" jours "+diff.getHours()+" heures "+diff.getMinutes()+" minutes "+diff.getSeconds()+" secondes";
+
+                    cdown.text.innerText = full;
+                });
+
+                if (routineControl) {
+                    setTimeout(_routine, period);
+                }
+            }
+
+            function stopRoutine() {
+                routineControl = false;
+            }
+
+            function startRoutine() {
+                // Populate cache
+                cache = Array.from(document.getElementsByClassName("countdown")).map(cdown_e => {
+                    let temp = {};
+
+                    let id = cdown_e.id.split("_")[1];
+                    temp.id = id;
+
+                    let grp = Array.from(cdown_e.children[0].children);
+
+                    grp.forEach(e => {
+                        let c_l = Array.from(e.classList);
+                        if (c_l.includes('card_title')) {
+                            temp.title = e;
+                        }
+
+                        if (c_l.includes('card_text')) {
+                            temp.text = e;
+                        }
+                    });
+
+                    return temp;
+                });
+
+                routineControl = true;
+                _routine();
             }
 
             function spawnPopup(id) {
@@ -188,7 +261,9 @@
             // ****** ONREADY ******
             Array.from(document.getElementsByClassName("countdown")).forEach(c => {
                 setupPopup(c);
-            })
+            });
+
+            startRoutine();
         </script>
     </body>
 </html>
