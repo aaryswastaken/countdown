@@ -174,7 +174,7 @@
                     if (post.readyState == 4) {
                         if (post.status == 200) {
                             refresh_cache();
-                            refresh_entries();
+                            setTimeout(refresh_entries, 50);
                             adiosPopup();
                         } else {
                             alert("[POST] Something happened: "+post.responseText);
