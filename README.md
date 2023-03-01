@@ -6,7 +6,7 @@ Here's how I run it (this project has not really been developped in the idea of 
 
 ```shell
 docker build -t countdown:1.1 .
-docker run -d --name countdown -v countdown_cache:/usr/src/app/cache -e PROD=true -p 8080:80 countdown:1.15
+docker run -d --name countdown -v countdown_cache:/usr/src/app/cache -e PROD=true -p 8080:80 countdown:1.1
 docker exec countdown node newuser.js <username> <password> <display name>
 ```
 
