@@ -41,8 +41,16 @@ const types = {"css": "text/css"};
 
 function init_db() {
     console.log("Initialising database");
-    mkdirSync("./cache/");
-    writeFileSync("./cache/databse.json", "{\"users\":[], \"countdowns\": []}");
+    try {
+        mkdirSync("./cache/");
+    } catch {}
+
+    try {
+        writeFileSync("./cache/database.json", "{\"users\":[], \"countdowns\": []}");
+    } catch {
+        console.log("An error happened while trying to create the database... Exiting.")
+        process.exit(101);
+    }
 }
 
 function import_db() {
