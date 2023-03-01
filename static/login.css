@@ -11,6 +11,7 @@
     box-shadow: 0 20px 40px -14px rgba(0, 0, 0, 0.95);
     border-radius: 1em;
 
+    padding-top: 15px;
     
     height: var(--login-height);
     width: var(--login-width);
@@ -22,6 +23,7 @@
 .login_container > form {
     display: grid;
     padding: 40px;
+    padding-top: 0;
 }
 
 .login_container > form > label {
@@ -54,4 +56,19 @@
     width: 20vw;
     height: 0px;
     left: 40vw;
+}
+
+.auth_reason {
+    margin: 20px 40px;
+    padding: 10px;
+    border-radius: 0.8em;
+}
+
+.auth_reason.red {
+    background-color: rgb(238, 72, 72);
+    text-align: center;
+}
+
+.reason_placeholder {
+    height: 3em;
 }

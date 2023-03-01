@@ -1,23 +1,26 @@
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { hash } from 'bcrypt';
 
-function init_db() {
-    writeFileSync("./databse.json", "{\"users\":[], \"countdowns\": []}");
-}
-
 function import_db() {
-    return JSON.parse(readFileSync("./database.json"));
+    return JSON.parse(readFileSync("./cache/database.json"));
 }
 
 function save_db() {
-    writeFileSync("./database.json", JSON.stringify(database))
+    writeFileSync("./cache/database.json", JSON.stringify(database))
 }
 
-if (!existsSync("./database.json")) {
+if (!existsSync("./cache/database.json")) {
     init_db()
 }
 
-let database = import_db();
+let database = {};
+
+try {
+    database = import_db();
+} catch {
+    init_db();
+    database = import_db();
+}
 
 if (!Object.keys(database).includes("users")) {
     database.users = [];

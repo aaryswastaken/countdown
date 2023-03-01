@@ -11,6 +11,13 @@
                 <div></div>
             </div>
             <div class="login_container">
+                <% if (reason !== undefined) { %>
+                    <div class="auth_reason red">
+                        <%= reason %>
+                    </div>
+                <% } else { %>
+                    <div class="reason_placeholder"></div>
+                <% } %>
                 <form action="/authenticate" method="post">
                     <label for="uname_input">Username</label>
                     <input type="text" name="username" id="uname_input" placeholder="Username"/>

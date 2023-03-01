@@ -99,9 +99,19 @@ server.get("/", async (req, res) => {
 })
 
 server.get("/login", (req, res) => {
-    let { login_error } = req.params;
+    let login_error = Object.entries(req.query).map(e => e[0])[0];
 
-    res.view("/static/login.ejs", { login_error });
+    let reason = undefined;
+
+    if (login_error == "jwt_e") {
+        reason = "Token Error";
+    } else if (login_error == "pwd_e") {
+        reason = "Wrong Password";
+    } else if (login_error == "u_e") {
+        reason = "Unknown user";
+    }
+
+    res.view("/static/login.ejs", { reason });
 })
 
 server.get("/static/:ressource_name", (req, res) => {
@@ -145,8 +155,6 @@ server.post("/api/countdowns/edit/:id", async (req, res) => {
             // Check if countdown id is from user:
             let countdown = database.countdowns.filter(c => c.id == id)[0];
 
-            console.log(req.query)
-
             if (countdown.user == decoded.username) {
                 // Proceed
 
@@ -178,7 +186,13 @@ server.post("/api/countdowns/new", async (req, res) => {
         if (await req.jwtVerify({onlyCookie: true})) {
             let decoded = server.jwt.decode(req.cookies["jwt"]);
             
-            let lastId = Math.max(...(database.countdowns.map(c => c.id)));
+            let lastId;
+
+            if (database.countdowns.length == 0) {
+                lastId = 0;
+            } else {
+                lastId = Math.max(...(database.countdowns.map(c => c.id)));
+            }
 
             database.countdowns.push({ user: decoded.username, id: lastId+1, end: Date.now(), name: "New Countdown" })
 
