@@ -265,6 +265,16 @@ server.post("/authenticate", {
     }
 );
 
+server.get("/api/isalive", (req, res) => {
+    res.code(200).send("Ok");
+});
+
+server.get("/api/refresh_db", (req, res) => {
+    database = import_db();
+
+    res.code(200).send("Ok");
+})
+
 server.get("/logout", (req, res) => {
     res.clearCookie("jwt");
 })
