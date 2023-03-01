@@ -9,7 +9,7 @@ import cookie from '@fastify/cookie';
 
 dotenv.config();
 
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 
 const dev = process.env.PROD != "true";
 
@@ -40,18 +40,20 @@ const ressource_whitelist = [ "main.css", "login.css", "index.css" ];
 const types = {"css": "text/css"};
 
 function init_db() {
-    writeFileSync("./databse.json", "{\"users\":[], \"countdowns\": []}");
+    console.log("Initialising database");
+    mkdirSync("./cache/");
+    writeFileSync("./cache/databse.json", "{\"users\":[], \"countdowns\": []}");
 }
 
 function import_db() {
-    return JSON.parse(readFileSync("./database.json"));
+    return JSON.parse(readFileSync("./cache/database.json"));
 }
 
 function save_db() {
-    writeFileSync("./database.json", JSON.stringify(database))
+    writeFileSync("./cache/database.json", JSON.stringify(database))
 }
 
-if (!existsSync("./database.json")) {
+if (!existsSync("./cache/database.json")) {
     init_db()
 }
 
@@ -245,7 +247,7 @@ server.get("/logout", (req, res) => {
     res.clearCookie("jwt");
 })
 
-server.listen({ port: dev ? 8080:80 }, (err, address) => {
+server.listen({ host: dev ? "127.0.0.1":"0.0.0.0", port: dev ? 8080:80 }, (err, address) => {
     if (err) {
         console.error(err)
         process.exit(1)

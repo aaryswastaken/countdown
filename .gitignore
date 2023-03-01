@@ -1,4 +1,5 @@
 package-lock.json
 node_modules/
-database.json
+cache/database.json
+docker_cache/
 .env
