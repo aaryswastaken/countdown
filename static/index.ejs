@@ -84,9 +84,6 @@
 
                 let date = new Date(countdowns[id].end);
 
-                // Don't know why but works 
-                // date = new Date(date.getTime() - (new Date().getTimezoneOffset()) * 60 * 1000);
-
                 document.getElementById("sel_year").value = date.getFullYear();
                 document.getElementById("sel_month").value = date.getMonth()+1;
                 document.getElementById("sel_day").value = date.getDate();
@@ -121,9 +118,6 @@
                 end.setHours(parseInt(document.getElementById("sel_hour").value))
                 end.setMinutes(parseInt(document.getElementById("sel_minutes").value))
                 end.setSeconds(parseInt(document.getElementById("sel_seconds").value))
-
-                // Dont know why but works (2)
-                // end = new Date(end.getTime() + (new Date().getTimezoneOffset() * 60 * 1000));
 
                 let new_name = document.getElementById("edit_countdown_name").value;
 
@@ -216,21 +210,12 @@
                     let now = Date.now();
 
                     if (target < now) {
-                    //     console.log("hmm");
                         cdown.text.innerText = "Finished!";
-
-                    //     console.log({ target: new Date(target), now: new Date(now) })
 
                         return
                     }
 
-                    // let diff = new Date((new Date(target-now)).toString().replaceAll(/ \(UTC(\+|\-)[0-9]+\:[0-9]+\)/gm, ""));
                     let diff = new Date(target-now);
-
-                    // if (cdown.id == 3) {
-                    //     console.log({ diff })
-                    // }
-
                     let full = (parseInt((diff.getTime()/(3600*24*1000)).toString().split(".")[0]))+" jours "+diff.getUTCHours()+" heures "+diff.getUTCMinutes()+" minutes "+diff.getUTCSeconds()+" secondes";
 
                     cdown.text.innerText = full;
