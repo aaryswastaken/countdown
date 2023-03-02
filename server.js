@@ -36,8 +36,8 @@ server.register(cookie, {
     parseOptions: {}
 });
 
-const ressource_whitelist = [ "main.css", "login.css", "index.css" ];
-const types = {"css": "text/css"};
+const ressource_whitelist = [ "main.css", "login.css", "index.css", "favicon.png" ];
+const types = {"css": "text/css", "png": "image/png"};
 
 function init_db() {
     console.log("Initialising database");
